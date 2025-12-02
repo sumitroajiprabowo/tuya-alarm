@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    container_name: tuya-alarm
+    ports:
+      - "5050:5000"
+    env_file:
+      - .env
+    restart: always
+    volumes:
+      - .:/app
+      - /app/venv
+      - /app/__pycache__
+    environment:
+      - FLASK_ENV=development
