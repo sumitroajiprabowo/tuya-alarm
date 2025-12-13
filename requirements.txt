@@ -1,3 +1,5 @@
+altgraph @ file:///AppleInternal/Library/BuildRoots/39d9dc1a-2111-11f0-be06-226177e5bb69/Library/Caches/com.apple.xbs/Sources/python3/altgraph-0.17.2-py2.py3-none-any.whl
+black==25.11.0
 blinker==1.9.0
 certifi==2025.11.12
 charset-normalizer==3.4.4
@@ -6,23 +8,33 @@ coverage==7.10.7
 exceptiongroup==1.3.1
 Flask==3.0.0
 Flask-Cors==4.0.0
-gunicorn==22.0.0
+future @ file:///AppleInternal/Library/BuildRoots/39d9dc1a-2111-11f0-be06-226177e5bb69/Library/Caches/com.apple.xbs/Sources/python3/future-0.18.2-py3-none-any.whl
 idna==3.11
 importlib_metadata==8.7.0
 iniconfig==2.1.0
 itsdangerous==2.2.0
 Jinja2==3.1.6
-jsonify==0.5
+macholib @ file:///AppleInternal/Library/BuildRoots/39d9dc1a-2111-11f0-be06-226177e5bb69/Library/Caches/com.apple.xbs/Sources/python3/macholib-1.15.2-py2.py3-none-any.whl
 MarkupSafe==3.0.3
+mypy_extensions==1.1.0
 packaging==25.0
+paho-mqtt==2.1.0
+pathspec==0.12.1
+pi==0.1.2
+platformdirs==4.4.0
 pluggy==1.6.0
-pytest==8.2.0
-pytest-cov==5.0.0
-pytest-mock==3.14.0
+pycryptodome==3.23.0
+Pygments==2.19.2
+pytest==8.4.2
+pytest-cov==7.0.0
 python-dotenv==1.0.0
-requests==2.32.4
+pytokens==0.3.0
+requests==2.31.0
+six @ file:///AppleInternal/Library/BuildRoots/39d9dc1a-2111-11f0-be06-226177e5bb69/Library/Caches/com.apple.xbs/Sources/python3/six-1.15.0-py2.py3-none-any.whl
 tomli==2.3.0
+tuya-connector-python==0.1.2
 typing_extensions==4.15.0
 urllib3==2.5.0
+websocket-client==1.9.0
 Werkzeug==3.1.4
 zipp==3.23.0
