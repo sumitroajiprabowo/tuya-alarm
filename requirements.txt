@@ -34,7 +34,7 @@ six @ file:///AppleInternal/Library/BuildRoots/39d9dc1a-2111-11f0-be06-226177e5b
 tomli==2.3.0
 tuya-connector-python==0.1.2
 typing_extensions==4.15.0
-urllib3==2.5.0
+urllib3==2.6.0
 websocket-client==1.9.0
 urllib3==2.6.0
 Werkzeug==3.1.4
