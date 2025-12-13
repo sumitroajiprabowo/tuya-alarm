@@ -2,14 +2,19 @@
 Unit Tests for Main Application (main.py)
 This module tests the Flask application factory and error handlers
 """
+
 # Import pytest framework for testing
 import pytest
+
 # Import json module for JSON operations
 import json
+
 # Import Mock and patch for mocking dependencies
 from unittest.mock import Mock, patch, MagicMock
+
 # Import Flask for assertions
 from flask import Flask
+
 # Import the create_app factory function
 from main import create_app
 
@@ -22,7 +27,7 @@ class TestCreateApp:
     and configures the Flask application instance.
     """
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_create_app_returns_flask_instance(self, mock_tuya_config):
         """
         Test that create_app returns a Flask instance
@@ -40,9 +45,9 @@ class TestCreateApp:
         assert isinstance(app, Flask), "create_app should return a Flask instance"
 
         # Assert that the app has the correct name
-        assert app.name == 'main', "App name should be 'main'"
+        assert app.name == "main", "App name should be 'main'"
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_create_app_enables_cors(self, mock_tuya_config):
         """
         Test that CORS is enabled for the application
@@ -60,14 +65,16 @@ class TestCreateApp:
         client = app.test_client()
 
         # Make a request to health endpoint (which should exist)
-        response = client.get('/api/health')
+        response = client.get("/api/health")
 
         # Check if CORS headers are present in the response
         # Note: The actual CORS header check depends on how Flask-CORS is configured
-        assert response.status_code in [200, 404], \
-            "Should be able to make request to the app"
+        assert response.status_code in [
+            200,
+            404,
+        ], "Should be able to make request to the app"
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_create_app_registers_blueprints(self, mock_tuya_config):
         """
         Test that all blueprints are registered
@@ -88,7 +95,7 @@ class TestCreateApp:
         # Note: Blueprint names might be different, check the actual implementation
         assert len(blueprints) > 0, "At least one blueprint should be registered"
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_create_app_preserves_json_key_order(self, mock_tuya_config):
         """
         Test that JSON key order is preserved
@@ -103,12 +110,15 @@ class TestCreateApp:
         app = create_app()
 
         # Assert that JSON key sorting is disabled
-        assert app.json.sort_keys is False, \
-            "JSON keys should not be sorted (preserve order)"
+        assert (
+            app.json.sort_keys is False
+        ), "JSON keys should not be sorted (preserve order)"
 
-    @patch('main.TuyaConfig')
-    @patch('main.logger')
-    def test_create_app_handles_config_validation_error(self, mock_logger, mock_tuya_config):
+    @patch("main.TuyaConfig")
+    @patch("main.logger")
+    def test_create_app_handles_config_validation_error(
+        self, mock_logger, mock_tuya_config
+    ):
         """
         Test configuration validation error handling
 
@@ -123,12 +133,12 @@ class TestCreateApp:
         app = create_app()
 
         # Assert that the app is still created
-        assert isinstance(app, Flask), \
-            "App should still be created even with config error"
+        assert isinstance(
+            app, Flask
+        ), "App should still be created even with config error"
 
         # Assert that the error was logged
-        assert mock_logger.error.called, \
-            "Configuration error should be logged"
+        assert mock_logger.error.called, "Configuration error should be logged"
 
 
 class TestErrorHandlers:
@@ -139,7 +149,7 @@ class TestErrorHandlers:
     (404, 405, 500, and general Exception handler).
     """
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_404_not_found_handler(self, mock_tuya_config):
         """
         Test 404 Not Found error handler
@@ -155,28 +165,30 @@ class TestErrorHandlers:
         client = app.test_client()
 
         # Make a request to a non-existent endpoint
-        response = client.get('/non/existent/path')
+        response = client.get("/non/existent/path")
 
         # Parse the JSON response
         response_json = json.loads(response.data)
 
         # Assert that the HTTP status code is 404
-        assert response.status_code == 404, \
-            "Status code should be 404 for non-existent endpoint"
+        assert (
+            response.status_code == 404
+        ), "Status code should be 404 for non-existent endpoint"
 
         # Assert that the response contains an error
-        assert 'error' in response_json, \
-            "Response should contain 'error' key"
+        assert "error" in response_json, "Response should contain 'error' key"
 
         # Assert that the error code is NOT_FOUND
-        assert response_json['error']['code'] == 'NOT_FOUND', \
-            "Error code should be 'NOT_FOUND'"
+        assert (
+            response_json["error"]["code"] == "NOT_FOUND"
+        ), "Error code should be 'NOT_FOUND'"
 
         # Assert that the error message mentions the path
-        assert '/non/existent/path' in response_json['error']['message'], \
-            "Error message should mention the requested path"
+        assert (
+            "/non/existent/path" in response_json["error"]["message"]
+        ), "Error message should mention the requested path"
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_405_method_not_allowed_handler(self, mock_tuya_config):
         """
         Test 405 Method Not Allowed error handler
@@ -191,31 +203,32 @@ class TestErrorHandlers:
         app = create_app()
 
         # Add a test route that only accepts GET
-        @app.route('/test-method', methods=['GET'])
+        @app.route("/test-method", methods=["GET"])
         def test_method_route():
-            return {'status': 'ok'}, 200
+            return {"status": "ok"}, 200
 
         client = app.test_client()
 
         # Make a POST request to a GET-only endpoint
-        response = client.post('/test-method')
+        response = client.post("/test-method")
 
         # Parse the JSON response
         response_json = json.loads(response.data)
 
         # Assert that the HTTP status code is 405
-        assert response.status_code == 405, \
-            "Status code should be 405 for method not allowed"
+        assert (
+            response.status_code == 405
+        ), "Status code should be 405 for method not allowed"
 
         # Assert that the response contains an error
-        assert 'error' in response_json, \
-            "Response should contain 'error' key"
+        assert "error" in response_json, "Response should contain 'error' key"
 
         # Assert that the error code is METHOD_NOT_ALLOWED
-        assert response_json['error']['code'] == 'METHOD_NOT_ALLOWED', \
-            "Error code should be 'METHOD_NOT_ALLOWED'"
+        assert (
+            response_json["error"]["code"] == "METHOD_NOT_ALLOWED"
+        ), "Error code should be 'METHOD_NOT_ALLOWED'"
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_500_internal_error_handler(self, mock_tuya_config):
         """
         Test 500 Internal Server Error handler
@@ -230,7 +243,7 @@ class TestErrorHandlers:
         app = create_app()
 
         # Add a test route that raises an exception
-        @app.route('/test-error')
+        @app.route("/test-error")
         def test_error_route():
             # Raise a generic exception to trigger the 500 handler
             raise Exception("Test internal error")
@@ -238,24 +251,25 @@ class TestErrorHandlers:
         client = app.test_client()
 
         # Make a request to the error route
-        response = client.get('/test-error')
+        response = client.get("/test-error")
 
         # Parse the JSON response
         response_json = json.loads(response.data)
 
         # Assert that the HTTP status code is 500
-        assert response.status_code == 500, \
-            "Status code should be 500 for internal error"
+        assert (
+            response.status_code == 500
+        ), "Status code should be 500 for internal error"
 
         # Assert that the response contains an error
-        assert 'error' in response_json, \
-            "Response should contain 'error' key"
+        assert "error" in response_json, "Response should contain 'error' key"
 
         # Assert that the error code is INTERNAL_ERROR
-        assert response_json['error']['code'] == 'INTERNAL_ERROR', \
-            "Error code should be 'INTERNAL_ERROR'"
+        assert (
+            response_json["error"]["code"] == "INTERNAL_ERROR"
+        ), "Error code should be 'INTERNAL_ERROR'"
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_exception_handler_with_http_error(self, mock_tuya_config):
         """
         Test exception handler with HTTP exceptions
@@ -272,7 +286,7 @@ class TestErrorHandlers:
         # Add a test route that raises an HTTP exception
         from werkzeug.exceptions import BadRequest
 
-        @app.route('/test-http-error')
+        @app.route("/test-http-error")
         def test_http_error_route():
             # Raise a BadRequest HTTP exception
             raise BadRequest("Invalid request data")
@@ -280,20 +294,20 @@ class TestErrorHandlers:
         client = app.test_client()
 
         # Make a request to the error route
-        response = client.get('/test-http-error')
+        response = client.get("/test-http-error")
 
         # Parse the JSON response
         response_json = json.loads(response.data)
 
         # Assert that the HTTP status code is 400 (BadRequest)
-        assert response.status_code == 400, \
-            "Status code should be 400 for BadRequest exception"
+        assert (
+            response.status_code == 400
+        ), "Status code should be 400 for BadRequest exception"
 
         # Assert that the response contains an error
-        assert 'error' in response_json, \
-            "Response should contain 'error' key"
+        assert "error" in response_json, "Response should contain 'error' key"
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_error_responses_include_meta(self, mock_tuya_config):
         """
         Test that error responses include metadata
@@ -309,22 +323,19 @@ class TestErrorHandlers:
         client = app.test_client()
 
         # Make a request to trigger a 404 error
-        response = client.get('/non/existent')
+        response = client.get("/non/existent")
 
         # Parse the JSON response
         response_json = json.loads(response.data)
 
         # Assert that meta is present
-        assert 'meta' in response_json, \
-            "Error response should contain 'meta' key"
+        assert "meta" in response_json, "Error response should contain 'meta' key"
 
         # Assert that meta contains timestamp
-        assert 'timestamp' in response_json['meta'], \
-            "Meta should contain 'timestamp'"
+        assert "timestamp" in response_json["meta"], "Meta should contain 'timestamp'"
 
         # Assert that meta contains request_id
-        assert 'request_id' in response_json['meta'], \
-            "Meta should contain 'request_id'"
+        assert "request_id" in response_json["meta"], "Meta should contain 'request_id'"
 
 
 class TestApplicationConfiguration:
@@ -334,7 +345,7 @@ class TestApplicationConfiguration:
     This class tests various configuration aspects of the Flask application.
     """
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_app_testing_mode(self, mock_tuya_config):
         """
         Test that app can be configured for testing
@@ -349,13 +360,12 @@ class TestApplicationConfiguration:
         app = create_app()
 
         # Enable testing mode
-        app.config['TESTING'] = True
+        app.config["TESTING"] = True
 
         # Assert that testing mode is enabled
-        assert app.config['TESTING'] is True, \
-            "Testing mode should be enabled"
+        assert app.config["TESTING"] is True, "Testing mode should be enabled"
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_app_has_required_config(self, mock_tuya_config):
         """
         Test that app has required configuration
@@ -370,11 +380,12 @@ class TestApplicationConfiguration:
         app = create_app()
 
         # Test that we can set custom config values
-        app.config['CUSTOM_VALUE'] = 'test_value'
+        app.config["CUSTOM_VALUE"] = "test_value"
 
         # Assert that the config value is set
-        assert app.config.get('CUSTOM_VALUE') == 'test_value', \
-            "Custom config values should be settable"
+        assert (
+            app.config.get("CUSTOM_VALUE") == "test_value"
+        ), "Custom config values should be settable"
 
 
 class TestApplicationRoutes:
@@ -385,7 +396,7 @@ class TestApplicationRoutes:
     registered from various blueprints.
     """
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_health_endpoint_exists(self, mock_tuya_config):
         """
         Test that health check endpoint exists
@@ -401,13 +412,12 @@ class TestApplicationRoutes:
         client = app.test_client()
 
         # Make a request to the health endpoint
-        response = client.get('/health')
+        response = client.get("/health")
 
         # Assert that the endpoint exists (not 404)
-        assert response.status_code != 404, \
-            "Health endpoint should exist"
+        assert response.status_code != 404, "Health endpoint should exist"
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_alarm_routes_exist(self, mock_tuya_config):
         """
         Test that alarm routes are registered
@@ -424,9 +434,9 @@ class TestApplicationRoutes:
 
         # Test alarm routes (they should exist, even if they return 400 for invalid IDs)
         alarm_routes = [
-            '/api/device/test123456/alarm/activate',
-            '/api/device/test123456/alarm/deactivate',
-            '/api/device/test123456/alarm/time-to-work'
+            "/api/device/test123456/alarm/activate",
+            "/api/device/test123456/alarm/deactivate",
+            "/api/device/test123456/alarm/time-to-work",
         ]
 
         for route in alarm_routes:
@@ -434,8 +444,7 @@ class TestApplicationRoutes:
 
             # Assert that the route exists (not 404)
             # It might return 400 or 500, but not 404 (Not Found)
-            assert response.status_code != 404, \
-                f"Route {route} should exist"
+            assert response.status_code != 404, f"Route {route} should exist"
 
 
 class TestApplicationIntegration:
@@ -446,7 +455,7 @@ class TestApplicationIntegration:
     in the Flask application.
     """
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_app_handles_json_requests(self, mock_tuya_config):
         """
         Test that app correctly handles JSON requests
@@ -461,32 +470,33 @@ class TestApplicationIntegration:
         app = create_app()
 
         # Add a test route that accepts JSON
-        @app.route('/test-json', methods=['POST'])
+        @app.route("/test-json", methods=["POST"])
         def test_json_route():
             from flask import request
+
             data = request.get_json()
-            return {'received': data}, 200
+            return {"received": data}, 200
 
         client = app.test_client()
 
         # Make a POST request with JSON data
-        test_data = {'key': 'value', 'number': 123}
+        test_data = {"key": "value", "number": 123}
         response = client.post(
-            '/test-json',
-            data=json.dumps(test_data),
-            content_type='application/json'
+            "/test-json", data=json.dumps(test_data), content_type="application/json"
         )
 
         # Parse the response
         response_json = json.loads(response.data)
 
         # Assert that the JSON was correctly received
-        assert response.status_code == 200, \
-            "JSON request should be processed successfully"
-        assert response_json['received'] == test_data, \
-            "Received data should match sent data"
+        assert (
+            response.status_code == 200
+        ), "JSON request should be processed successfully"
+        assert (
+            response_json["received"] == test_data
+        ), "Received data should match sent data"
 
-    @patch('main.TuyaConfig')
+    @patch("main.TuyaConfig")
     def test_app_returns_json_responses(self, mock_tuya_config, client):
         """
         Test that app returns JSON responses
@@ -502,11 +512,12 @@ class TestApplicationIntegration:
         client = app.test_client()
 
         # Make a request to trigger an error
-        response = client.get('/non/existent')
+        response = client.get("/non/existent")
 
         # Assert that the content type is JSON
-        assert response.content_type.startswith('application/json'), \
-            "Response should have JSON content type"
+        assert response.content_type.startswith(
+            "application/json"
+        ), "Response should have JSON content type"
 
         # Assert that the response can be parsed as JSON
         try:

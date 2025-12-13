@@ -2,15 +2,17 @@
 Pytest Configuration and Shared Fixtures
 This file contains common test fixtures used across multiple test modules
 """
+
 # Import pytest framework for test configuration and fixtures
 import pytest
+
 # Import sys and os for path manipulation
 import sys
 import os
 
 # Add the parent directory to the Python path
 # This allows importing modules from the project root
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Import the Flask app factory function from main module
 from main import create_app
@@ -32,10 +34,10 @@ def app():
 
     # Enable testing mode which disables error catching during request handling
     # This allows exceptions to propagate and be caught by the test framework
-    app.config['TESTING'] = True
+    app.config["TESTING"] = True
 
     # Disable CSRF protection during testing to simplify test requests
-    app.config['WTF_CSRF_ENABLED'] = False
+    app.config["WTF_CSRF_ENABLED"] = False
 
     # Return the configured app instance
     return app
