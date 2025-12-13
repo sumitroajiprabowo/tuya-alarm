@@ -2,12 +2,6 @@
 
 Quick guide to running the Tuya Alarm Control API with Flask.
 
-> [!IMPORTANT]
-> **Security Warning**: Never commit the `.env` file to the repository. Ensure this file is in `.gitignore`.
-> Do not publish `DEVICE_ID`, `ACCESS_ID`, or `ACCESS_SECRET` to a public repository.
-
----
-
 ## ⚡ Setup
 
 ### 1. Environment Variables
