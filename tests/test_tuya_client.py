@@ -2,10 +2,13 @@
 Unit Tests for Tuya Client Service (services/tuya_client.py)
 This module tests the TuyaClient class that handles Tuya API communication
 """
+
 # Import pytest framework for testing
 import pytest
+
 # Import Mock and patch for mocking external dependencies
 from unittest.mock import Mock, patch
+
 # Import the TuyaClient class to be tested
 from services.tuya_client import TuyaClient
 
@@ -42,7 +45,9 @@ class TestTuyaClientHashingMethods:
 
         # Assert that the result matches the expected hash
         # This is the known SHA256 hash of "test_data"
-        expected_hash = "e7d87b738825c33824cf3fd32b7314161fc8c425129163ff5e7260fc7288da36"
+        expected_hash = (
+            "e7d87b738825c33824cf3fd32b7314161fc8c425129163ff5e7260fc7288da36"
+        )
         assert result == expected_hash, "Hash should match expected value"
 
     def test_sha256_hash_with_bytes(self):
@@ -68,8 +73,12 @@ class TestTuyaClientHashingMethods:
         assert len(result) == 64, "SHA256 hash should be 64 characters long"
 
         # The hash should be the same as hashing "test_data" as string
-        expected_hash = "e7d87b738825c33824cf3fd32b7314161fc8c425129163ff5e7260fc7288da36"
-        assert result == expected_hash, "Hash of bytes should match hash of equivalent string"
+        expected_hash = (
+            "e7d87b738825c33824cf3fd32b7314161fc8c425129163ff5e7260fc7288da36"
+        )
+        assert (
+            result == expected_hash
+        ), "Hash of bytes should match hash of equivalent string"
 
     def test_sha256_hash_with_none(self):
         """
@@ -89,7 +98,9 @@ class TestTuyaClientHashingMethods:
 
         # Assert that the result matches the hash of empty data
         # This is the known SHA256 hash of empty string
-        expected_hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        expected_hash = (
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        )
         assert result == expected_hash, "Hash of None should match hash of empty data"
 
     def test_sha256_hash_with_empty_string(self):
@@ -106,8 +117,12 @@ class TestTuyaClientHashingMethods:
         result = client._sha256_hash("")
 
         # Expected hash of empty string
-        expected_hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        assert result == expected_hash, "Hash of empty string should match expected value"
+        expected_hash = (
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        )
+        assert (
+            result == expected_hash
+        ), "Hash of empty string should match expected value"
 
     def test_hmac_sha256(self):
         """
@@ -172,7 +187,7 @@ class TestTuyaClientSignatureBuilding:
     authentication signatures for Tuya API requests.
     """
 
-    @patch('services.tuya_client.TuyaConfig')
+    @patch("services.tuya_client.TuyaConfig")
     def test_build_signature_basic(self, mock_config):
         """
         Test basic signature building
@@ -208,7 +223,7 @@ class TestTuyaClientSignatureBuilding:
         # Assert that the result has the correct length (64 hex characters)
         assert len(result) == 64, "Signature should be 64 characters long"
 
-    @patch('services.tuya_client.TuyaConfig')
+    @patch("services.tuya_client.TuyaConfig")
     def test_build_signature_with_body(self, mock_config):
         """
         Test signature building with request body
@@ -240,10 +255,14 @@ class TestTuyaClientSignatureBuilding:
 
         # Verify that a different body produces a different signature
         different_body = '{"commands":[{"code":"switch","value":false}]}'
-        different_result = client._build_signature(method, path, different_body, timestamp, token)
-        assert result != different_result, "Different bodies should produce different signatures"
+        different_result = client._build_signature(
+            method, path, different_body, timestamp, token
+        )
+        assert (
+            result != different_result
+        ), "Different bodies should produce different signatures"
 
-    @patch('services.tuya_client.TuyaConfig')
+    @patch("services.tuya_client.TuyaConfig")
     def test_build_signature_with_token(self, mock_config):
         """
         Test signature building with access token
@@ -270,8 +289,9 @@ class TestTuyaClientSignatureBuilding:
         )
 
         # Assert that token affects the signature
-        assert result_without_token != result_with_token, \
-            "Token should change the signature"
+        assert (
+            result_without_token != result_with_token
+        ), "Token should change the signature"
 
 
 class TestTuyaClientGetAccessToken:
@@ -282,9 +302,9 @@ class TestTuyaClientGetAccessToken:
     and caches access tokens from the Tuya API.
     """
 
-    @patch('services.tuya_client.requests.get')
-    @patch('services.tuya_client.TuyaConfig')
-    @patch('services.tuya_client.time.time')
+    @patch("services.tuya_client.requests.get")
+    @patch("services.tuya_client.TuyaConfig")
+    @patch("services.tuya_client.time.time")
     def test_get_access_token_success(self, mock_time, mock_config, mock_requests):
         """
         Test successful access token retrieval
@@ -300,16 +320,16 @@ class TestTuyaClientGetAccessToken:
         mock_config.ACCESS_SECRET = "test_secret"
         mock_config.ENDPOINT = "https://openapi.tuyacn.com"
         # Mock empty token cache
-        mock_config.token_cache = {'token': None, 'expire_time': 0}
+        mock_config.token_cache = {"token": None, "expire_time": 0}
 
         # Create a mock response for the token request
         mock_response = Mock()
         mock_response.json.return_value = {
-            'success': True,
-            'result': {
-                'access_token': 'new_token_12345',
-                'expire_time': 7200  # 2 hours
-            }
+            "success": True,
+            "result": {
+                "access_token": "new_token_12345",
+                "expire_time": 7200,  # 2 hours
+            },
         }
         # Configure requests.get to return the mock response
         mock_requests.return_value = mock_response
@@ -322,18 +342,19 @@ class TestTuyaClientGetAccessToken:
         token = client.get_access_token()
 
         # Assert that the returned token is correct
-        assert token == 'new_token_12345', "Should return the new access token"
+        assert token == "new_token_12345", "Should return the new access token"
 
         # Assert that requests.get was called
         assert mock_requests.called, "requests.get should be called"
 
         # Assert that the token was cached
-        assert mock_config.token_cache['token'] == 'new_token_12345', \
-            "Token should be cached"
+        assert (
+            mock_config.token_cache["token"] == "new_token_12345"
+        ), "Token should be cached"
 
-    @patch('services.tuya_client.requests.get')
-    @patch('services.tuya_client.TuyaConfig')
-    @patch('services.tuya_client.time.time')
+    @patch("services.tuya_client.requests.get")
+    @patch("services.tuya_client.TuyaConfig")
+    @patch("services.tuya_client.time.time")
     def test_get_access_token_uses_cache(self, mock_time, mock_config, mock_requests):
         """
         Test that cached token is used when valid
@@ -351,8 +372,8 @@ class TestTuyaClientGetAccessToken:
         mock_config.ENDPOINT = "https://openapi.tuyacn.com"
         # Set a cached token that hasn't expired
         mock_config.token_cache = {
-            'token': 'cached_token_12345',
-            'expire_time': (current_time + 1000) * 1000  # Expires in future
+            "token": "cached_token_12345",
+            "expire_time": (current_time + 1000) * 1000,  # Expires in future
         }
 
         # Create an instance of TuyaClient
@@ -363,14 +384,16 @@ class TestTuyaClientGetAccessToken:
         token = client.get_access_token()
 
         # Assert that the cached token is returned
-        assert token == 'cached_token_12345', "Should return cached token"
+        assert token == "cached_token_12345", "Should return cached token"
 
         # Assert that requests.get was NOT called (cache was used)
-        assert not mock_requests.called, "requests.get should not be called when cache is valid"
+        assert (
+            not mock_requests.called
+        ), "requests.get should not be called when cache is valid"
 
-    @patch('services.tuya_client.requests.get')
-    @patch('services.tuya_client.TuyaConfig')
-    @patch('services.tuya_client.time.time')
+    @patch("services.tuya_client.requests.get")
+    @patch("services.tuya_client.TuyaConfig")
+    @patch("services.tuya_client.time.time")
     def test_get_access_token_api_failure(self, mock_time, mock_config, mock_requests):
         """
         Test access token retrieval when API returns error
@@ -385,14 +408,14 @@ class TestTuyaClientGetAccessToken:
         mock_config.ACCESS_ID = "test_access_id"
         mock_config.ACCESS_SECRET = "test_secret"
         mock_config.ENDPOINT = "https://openapi.tuyacn.com"
-        mock_config.token_cache = {'token': None, 'expire_time': 0}
+        mock_config.token_cache = {"token": None, "expire_time": 0}
 
         # Create a mock response with failure
         mock_response = Mock()
         mock_response.json.return_value = {
-            'success': False,
-            'msg': 'Invalid credentials',
-            'code': 1001
+            "success": False,
+            "msg": "Invalid credentials",
+            "code": 1001,
         }
         mock_requests.return_value = mock_response
 
@@ -405,13 +428,16 @@ class TestTuyaClientGetAccessToken:
             client.get_access_token()
 
         # Assert that the exception message contains the error
-        assert 'Failed to get token' in str(exc_info.value), \
-            "Exception should indicate token retrieval failure"
+        assert "Failed to get token" in str(
+            exc_info.value
+        ), "Exception should indicate token retrieval failure"
 
-    @patch('services.tuya_client.requests.get')
-    @patch('services.tuya_client.TuyaConfig')
-    @patch('services.tuya_client.time.time')
-    def test_get_access_token_network_error(self, mock_time, mock_config, mock_requests):
+    @patch("services.tuya_client.requests.get")
+    @patch("services.tuya_client.TuyaConfig")
+    @patch("services.tuya_client.time.time")
+    def test_get_access_token_network_error(
+        self, mock_time, mock_config, mock_requests
+    ):
         """
         Test access token retrieval with network error
 
@@ -425,11 +451,14 @@ class TestTuyaClientGetAccessToken:
         mock_config.ACCESS_ID = "test_access_id"
         mock_config.ACCESS_SECRET = "test_secret"
         mock_config.ENDPOINT = "https://openapi.tuyacn.com"
-        mock_config.token_cache = {'token': None, 'expire_time': 0}
+        mock_config.token_cache = {"token": None, "expire_time": 0}
 
         # Configure requests.get to raise a network error
         import requests
-        mock_requests.side_effect = requests.exceptions.ConnectionError("Network unreachable")
+
+        mock_requests.side_effect = requests.exceptions.ConnectionError(
+            "Network unreachable"
+        )
 
         # Create an instance of TuyaClient
         client = TuyaClient()
@@ -440,8 +469,9 @@ class TestTuyaClientGetAccessToken:
             client.get_access_token()
 
         # Assert that the exception message indicates network error
-        assert 'Network error' in str(exc_info.value), \
-            "Exception should indicate network error"
+        assert "Network error" in str(
+            exc_info.value
+        ), "Exception should indicate network error"
 
 
 class TestTuyaClientRequest:
@@ -452,9 +482,9 @@ class TestTuyaClientRequest:
     requests to the Tuya API.
     """
 
-    @patch('services.tuya_client.requests.get')
-    @patch.object(TuyaClient, 'get_access_token')
-    @patch('services.tuya_client.TuyaConfig')
+    @patch("services.tuya_client.requests.get")
+    @patch.object(TuyaClient, "get_access_token")
+    @patch("services.tuya_client.TuyaConfig")
     def test_request_get_success(self, mock_config, mock_get_token, mock_requests):
         """
         Test successful GET request
@@ -472,8 +502,8 @@ class TestTuyaClientRequest:
         # Create a mock successful response
         mock_response = Mock()
         mock_response.json.return_value = {
-            'success': True,
-            'result': {'device_id': '123', 'status': 'online'}
+            "success": True,
+            "result": {"device_id": "123", "status": "online"},
         }
         mock_requests.return_value = mock_response
 
@@ -482,18 +512,18 @@ class TestTuyaClientRequest:
         client.config = mock_config
 
         # Make a GET request
-        result = client.request('GET', '/v1.0/devices/123')
+        result = client.request("GET", "/v1.0/devices/123")
 
         # Assert that the result is successful
-        assert result['success'] is True, "Request should be successful"
-        assert 'result' in result, "Response should contain 'result'"
+        assert result["success"] is True, "Request should be successful"
+        assert "result" in result, "Response should contain 'result'"
 
         # Assert that requests.get was called
         assert mock_requests.called, "requests.get should be called"
 
-    @patch('services.tuya_client.requests.post')
-    @patch.object(TuyaClient, 'get_access_token')
-    @patch('services.tuya_client.TuyaConfig')
+    @patch("services.tuya_client.requests.post")
+    @patch.object(TuyaClient, "get_access_token")
+    @patch("services.tuya_client.TuyaConfig")
     def test_request_post_with_body(self, mock_config, mock_get_token, mock_requests):
         """
         Test successful POST request with body
@@ -511,8 +541,8 @@ class TestTuyaClientRequest:
         # Create a mock successful response
         mock_response = Mock()
         mock_response.json.return_value = {
-            'success': True,
-            'result': {'code': 'success'}
+            "success": True,
+            "result": {"code": "success"},
         }
         mock_requests.return_value = mock_response
 
@@ -521,13 +551,13 @@ class TestTuyaClientRequest:
         client.config = mock_config
 
         # Define request body
-        body = {'commands': [{'code': 'switch', 'value': True}]}
+        body = {"commands": [{"code": "switch", "value": True}]}
 
         # Make a POST request
-        result = client.request('POST', '/v1.0/devices/123/commands', body)
+        result = client.request("POST", "/v1.0/devices/123/commands", body)
 
         # Assert that the result is successful
-        assert result['success'] is True, "Request should be successful"
+        assert result["success"] is True, "Request should be successful"
 
         # Assert that requests.post was called
         assert mock_requests.called, "requests.post should be called"
@@ -536,11 +566,11 @@ class TestTuyaClientRequest:
         call_args = mock_requests.call_args
 
         # Assert that the body was sent as JSON string
-        assert 'data' in call_args.kwargs, "Request should include data"
+        assert "data" in call_args.kwargs, "Request should include data"
 
-    @patch('services.tuya_client.requests.get')
-    @patch.object(TuyaClient, 'get_access_token')
-    @patch('services.tuya_client.TuyaConfig')
+    @patch("services.tuya_client.requests.get")
+    @patch.object(TuyaClient, "get_access_token")
+    @patch("services.tuya_client.TuyaConfig")
     def test_request_timeout(self, mock_config, mock_get_token, mock_requests):
         """
         Test request timeout handling
@@ -557,6 +587,7 @@ class TestTuyaClientRequest:
 
         # Configure requests to raise timeout error
         import requests
+
         mock_requests.side_effect = requests.exceptions.Timeout("Request timed out")
 
         # Create an instance of TuyaClient
@@ -565,11 +596,12 @@ class TestTuyaClientRequest:
 
         # Assert that an exception is raised for timeout
         with pytest.raises(Exception) as exc_info:
-            client.request('GET', '/v1.0/devices/123')
+            client.request("GET", "/v1.0/devices/123")
 
         # Assert that the exception message indicates timeout
-        assert 'timeout' in str(exc_info.value).lower(), \
-            "Exception should indicate timeout"
+        assert (
+            "timeout" in str(exc_info.value).lower()
+        ), "Exception should indicate timeout"
 
     def test_request_unsupported_method(self):
         """
@@ -578,16 +610,17 @@ class TestTuyaClientRequest:
         Verifies that unsupported HTTP methods raise an appropriate exception.
         """
         # Create an instance of TuyaClient
-        with patch.object(TuyaClient, 'get_access_token', return_value="test_token"):
+        with patch.object(TuyaClient, "get_access_token", return_value="test_token"):
             client = TuyaClient()
 
             # Assert that an exception is raised for unsupported method
             with pytest.raises(Exception) as exc_info:
-                client.request('PATCH', '/v1.0/devices/123')
+                client.request("PATCH", "/v1.0/devices/123")
 
             # Assert that the exception indicates unsupported method
-            assert 'Unsupported HTTP method' in str(exc_info.value), \
-                "Exception should indicate unsupported HTTP method"
+            assert "Unsupported HTTP method" in str(
+                exc_info.value
+            ), "Exception should indicate unsupported HTTP method"
 
 
 class TestTuyaClientDeviceMethods:
@@ -598,7 +631,7 @@ class TestTuyaClientDeviceMethods:
     (get_devices, get_device_info, send_commands).
     """
 
-    @patch.object(TuyaClient, 'request')
+    @patch.object(TuyaClient, "request")
     def test_get_devices(self, mock_request):
         """
         Test get_devices method
@@ -608,8 +641,8 @@ class TestTuyaClientDeviceMethods:
         """
         # Configure mock to return a successful response
         mock_request.return_value = {
-            'success': True,
-            'result': [{'device_id': '123'}, {'device_id': '456'}]
+            "success": True,
+            "result": [{"device_id": "123"}, {"device_id": "456"}],
         }
 
         # Create an instance of TuyaClient
@@ -619,12 +652,12 @@ class TestTuyaClientDeviceMethods:
         result = client.get_devices()
 
         # Assert that request was called with correct parameters
-        mock_request.assert_called_once_with('GET', '/v1.0/devices')
+        mock_request.assert_called_once_with("GET", "/v1.0/devices")
 
         # Assert that the result is returned
-        assert result['success'] is True, "Should return successful result"
+        assert result["success"] is True, "Should return successful result"
 
-    @patch.object(TuyaClient, 'request')
+    @patch.object(TuyaClient, "request")
     def test_get_device_info(self, mock_request):
         """
         Test get_device_info method
@@ -634,24 +667,24 @@ class TestTuyaClientDeviceMethods:
         """
         # Configure mock to return a successful response
         mock_request.return_value = {
-            'success': True,
-            'result': {'device_id': 'device123', 'name': 'Test Device'}
+            "success": True,
+            "result": {"device_id": "device123", "name": "Test Device"},
         }
 
         # Create an instance of TuyaClient
         client = TuyaClient()
 
         # Call get_device_info
-        device_id = 'device123'
+        device_id = "device123"
         result = client.get_device_info(device_id)
 
         # Assert that request was called with correct parameters
-        mock_request.assert_called_once_with('GET', f'/v1.0/devices/{device_id}')
+        mock_request.assert_called_once_with("GET", f"/v1.0/devices/{device_id}")
 
         # Assert that the result is returned
-        assert result['success'] is True, "Should return successful result"
+        assert result["success"] is True, "Should return successful result"
 
-    @patch.object(TuyaClient, 'request')
+    @patch.object(TuyaClient, "request")
     def test_send_commands_success(self, mock_request):
         """
         Test send_commands method with valid commands
@@ -660,19 +693,16 @@ class TestTuyaClientDeviceMethods:
         to the specified device.
         """
         # Configure mock to return a successful response
-        mock_request.return_value = {
-            'success': True,
-            'result': {'success': True}
-        }
+        mock_request.return_value = {"success": True, "result": {"success": True}}
 
         # Create an instance of TuyaClient
         client = TuyaClient()
 
         # Define test commands
-        device_id = 'device123'
+        device_id = "device123"
         commands = [
-            {'code': 'switch', 'value': True},
-            {'code': 'brightness', 'value': 80}
+            {"code": "switch", "value": True},
+            {"code": "brightness", "value": 80},
         ]
 
         # Call send_commands
@@ -680,13 +710,11 @@ class TestTuyaClientDeviceMethods:
 
         # Assert that request was called with correct parameters
         mock_request.assert_called_once_with(
-            'POST',
-            f'/v1.0/devices/{device_id}/commands',
-            {'commands': commands}
+            "POST", f"/v1.0/devices/{device_id}/commands", {"commands": commands}
         )
 
         # Assert that the result is successful
-        assert result['success'] is True, "Should return successful result"
+        assert result["success"] is True, "Should return successful result"
 
     def test_send_commands_with_empty_list(self):
         """
@@ -700,11 +728,12 @@ class TestTuyaClientDeviceMethods:
 
         # Assert that ValueError is raised for empty list
         with pytest.raises(ValueError) as exc_info:
-            client.send_commands('device123', [])
+            client.send_commands("device123", [])
 
         # Assert that the exception message is appropriate
-        assert 'non-empty list' in str(exc_info.value), \
-            "Exception should indicate list must be non-empty"
+        assert "non-empty list" in str(
+            exc_info.value
+        ), "Exception should indicate list must be non-empty"
 
     def test_send_commands_with_non_list(self):
         """
@@ -718,8 +747,9 @@ class TestTuyaClientDeviceMethods:
 
         # Assert that ValueError is raised for non-list input
         with pytest.raises(ValueError) as exc_info:
-            client.send_commands('device123', {'code': 'switch'})
+            client.send_commands("device123", {"code": "switch"})
 
         # Assert that the exception message is appropriate
-        assert 'must be a' in str(exc_info.value).lower(), \
-            "Exception should indicate commands must be a list"
+        assert (
+            "must be a" in str(exc_info.value).lower()
+        ), "Exception should indicate commands must be a list"

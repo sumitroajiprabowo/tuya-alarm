@@ -1,6 +1,7 @@
 """
 Tuya API Configuration - Singapore Data Center
 """
+
 import os
 import logging
 from dotenv import load_dotenv
@@ -15,15 +16,12 @@ class TuyaConfig:
     """Tuya API Configuration - Singapore"""
 
     # API Credentials
-    ACCESS_ID = os.getenv('TUYA_ACCESS_ID')
-    ACCESS_SECRET = os.getenv('TUYA_ACCESS_SECRET')
-    ENDPOINT = os.getenv('TUYA_ENDPOINT', 'https://openapi-sg.iotbing.com')
+    ACCESS_ID = os.getenv("TUYA_ACCESS_ID")
+    ACCESS_SECRET = os.getenv("TUYA_ACCESS_SECRET")
+    ENDPOINT = os.getenv("TUYA_ENDPOINT", "https://openapi-sg.iotbing.com")
 
     # Token cache
-    token_cache = {
-        'token': None,
-        'expire_time': 0
-    }
+    token_cache = {"token": None, "expire_time": 0}
 
     @classmethod
     def validate(cls):
@@ -42,7 +40,8 @@ class TuyaConfig:
 
 class FlaskConfig:
     """Flask Application Configuration"""
-    HOST = os.getenv('FLASK_HOST', '0.0.0.0')
-    PORT = int(os.getenv('FLASK_PORT', 5000))
-    DEBUG = os.getenv('FLASK_DEBUG', 'True').lower() == 'true'
-    LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
+
+    HOST = os.getenv("FLASK_HOST", "0.0.0.0")
+    PORT = int(os.getenv("FLASK_PORT", 5000))
+    DEBUG = os.getenv("FLASK_DEBUG", "True").lower() == "true"
+    LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")

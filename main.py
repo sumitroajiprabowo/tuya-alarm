@@ -9,12 +9,12 @@ from routes.alarm import alarm_bp
 from routes.health import health_bp
 
 # Suppress OpenSSL warnings that might clutter the logs
-warnings.filterwarnings('ignore', message='.*OpenSSL.*')
+warnings.filterwarnings("ignore", message=".*OpenSSL.*")
 
 # Setup application logging configuration
 logging.basicConfig(
     level=getattr(logging, FlaskConfig.LOG_LEVEL),
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 # Get the logger instance for the main module
 logger = logging.getLogger(__name__)
@@ -49,51 +49,37 @@ def create_app():
     @app.errorhandler(404)
     def not_found_error(error):
         return error_response(
-            message=f"Endpoint {request.path} not found",
-            code="NOT_FOUND",
-            status=404
+            message=f"Endpoint {request.path} not found", code="NOT_FOUND", status=404
         )
 
     # Handle 405 Method Not Allowed errors
     @app.errorhandler(405)
     def method_not_allowed_error(error):
         return error_response(
-            message="Method not allowed",
-            code="METHOD_NOT_ALLOWED",
-            status=405
+            message="Method not allowed", code="METHOD_NOT_ALLOWED", status=405
         )
 
     # Handle 500 Internal Server Error
     @app.errorhandler(500)
     def internal_error(error):
         return error_response(
-            message="Internal server error",
-            code="INTERNAL_ERROR",
-            status=500
+            message="Internal server error", code="INTERNAL_ERROR", status=500
         )
-    
+
     # Handle generic Exceptions
     @app.errorhandler(Exception)
     def handle_exception(e):
         # Pass through HTTP errors if they have a code attribute
-        if hasattr(e, 'code'):
-            return error_response(
-                message=str(e),
-                code="HTTP_ERROR",
-                status=e.code
-            )
-        
+        if hasattr(e, "code"):
+            return error_response(message=str(e), code="HTTP_ERROR", status=e.code)
+
         # Handle non-HTTP exceptions as Internal Server Errors
-        return error_response(
-            message=str(e),
-            code="INTERNAL_ERROR",
-            status=500
-        )
+        return error_response(message=str(e), code="INTERNAL_ERROR", status=500)
 
     return app
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Create the application instance
     app = create_app()
 
@@ -107,8 +93,4 @@ if __name__ == '__main__':
     logger.info("=" * 60)
 
     # Run the Flask application
-    app.run(
-        host=FlaskConfig.HOST,
-        port=FlaskConfig.PORT,
-        debug=FlaskConfig.DEBUG
-    )
+    app.run(host=FlaskConfig.HOST, port=FlaskConfig.PORT, debug=FlaskConfig.DEBUG)
