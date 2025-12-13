@@ -20,7 +20,7 @@ patches:
               env:
               - name: ENV
                 value: "production"
-              image: "sumitroajiprabowo/tuya-alarm:sha-ca7bf14"
+              image: "sumitroajiprabowo/tuya-alarm:latest"
               resources:
                 limits:
                   memory: "512Mi"
