@@ -183,6 +183,11 @@ class TuyaClient:
             Exception: If request fails
         """
         try:
+            # Validate HTTP method early
+            supported_methods = ["GET", "POST", "PUT", "DELETE"]
+            if method not in supported_methods:
+                raise Exception(f"Unsupported HTTP method: {method}")
+
             # Get a valid access token
             token = self.get_access_token()
             # Generate current timestamp
@@ -223,8 +228,6 @@ class TuyaClient:
                 response = requests.put(url, headers=headers, data=body_str, timeout=10)
             elif method == "DELETE":
                 response = requests.delete(url, headers=headers, timeout=10)
-            else:
-                raise Exception(f"Unsupported HTTP method: {method}")
 
             # Parse the JSON response
             result = response.json()
