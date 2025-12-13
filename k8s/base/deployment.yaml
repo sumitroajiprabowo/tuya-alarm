@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tuya-alarm
+  labels:
+    app: tuya-alarm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tuya-alarm
+  template:
+    metadata:
+      labels:
+        app: tuya-alarm
+    spec:
+      containers:
+      - name: tuya-alarm
+        image: sumitroajiprabowo/tuya-alarm:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+          name: http
+          protocol: TCP
+        env:
+        - name: ENV
+          value: "production"
+        - name: FLASK_HOST
+          value: "0.0.0.0"
+        - name: FLASK_PORT
+          value: "5000"
+        - name: TUYA_ACCESS_ID
+          valueFrom:
+            secretKeyRef:
+              name: tuya-alarm-secrets
+              key: tuya-access-id
+        - name: TUYA_ACCESS_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: tuya-alarm-secrets
+              key: tuya-access-secret
+        - name: TUYA_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: tuya-alarm-secrets
+              key: tuya-endpoint
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3

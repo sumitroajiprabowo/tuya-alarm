@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tuya-alarm-service
+  labels:
+    app: tuya-alarm
+spec:
+  type: ClusterIP
+  selector:
+    app: tuya-alarm
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP
+      name: http
