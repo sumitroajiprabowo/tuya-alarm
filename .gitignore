@@ -59,6 +59,14 @@ secrets.json
 *.pem
 *.key
 
+# Kubernetes Secrets (NEVER commit these!)
+k8s/base/secret.yaml
+k8s/**/secret-*.yaml
+!k8s/**/secret-template.yaml
+!k8s/**/sealed-secret-*.yaml
+backup-secret.yaml
+backup-secret.yaml.gpg
+
 # Cache
 .cache/
 *.cache
