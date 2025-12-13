@@ -15,7 +15,6 @@ spec:
     server: https://kubernetes.default.svc
     namespace: production
   syncPolicy:
-    # Manual sync for production - requires approval for safety
     syncOptions:
       - CreateNamespace=true
       - PruneLast=true
