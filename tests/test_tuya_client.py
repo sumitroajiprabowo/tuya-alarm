@@ -639,9 +639,9 @@ class TestTuyaClientRequest:
         client = TuyaClient()
         client.config = mock_config
         body = {"value": 100}
-        
+
         result = client.request("PUT", "/v1.0/devices/123", body)
-        
+
         assert result["success"] is True
         assert mock_requests.called
         assert "data" in mock_requests.call_args.kwargs
@@ -662,16 +662,18 @@ class TestTuyaClientRequest:
 
         client = TuyaClient()
         client.config = mock_config
-        
+
         result = client.request("DELETE", "/v1.0/devices/123")
-        
+
         assert result["success"] is True
         assert mock_requests.called
 
     @patch("services.tuya_client.requests.get")
     @patch.object(TuyaClient, "get_access_token")
     @patch("services.tuya_client.TuyaConfig")
-    def test_request_network_error_generic(self, mock_config, mock_get_token, mock_requests):
+    def test_request_network_error_generic(
+        self, mock_config, mock_get_token, mock_requests
+    ):
         """Test generic RequestException handling"""
         mock_config.ACCESS_ID = "test_access_id"
         mock_config.ACCESS_SECRET = "test_secret"
@@ -679,14 +681,17 @@ class TestTuyaClientRequest:
         mock_get_token.return_value = "test_token"
 
         import requests
-        mock_requests.side_effect = requests.exceptions.RequestException("Generic network error")
+
+        mock_requests.side_effect = requests.exceptions.RequestException(
+            "Generic network error"
+        )
 
         client = TuyaClient()
         client.config = mock_config
-        
+
         with pytest.raises(Exception) as exc_info:
             client.request("GET", "/v1.0/devices/123")
-        
+
         assert "Network error" in str(exc_info.value)
 
 
