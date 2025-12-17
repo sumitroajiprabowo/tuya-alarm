@@ -25,7 +25,6 @@ tuya_client = TuyaClient()
 @health_bp.route("/")
 def index():
     """API welcome page"""
-    # Define the data to be returned in the response
     data = {
         "name": "Tuya Alarm Control API",
         "version": "2.0.0",
@@ -33,6 +32,7 @@ def index():
         "status": "running",
         "endpoints": {
             "health": "/health",
+            "credentials": "/credentials",
             "devices": "/api/devices",
             "device_info": "/api/device/<device_id>",
             "device_status": "/api/device/<device_id>/status",
@@ -46,30 +46,34 @@ def index():
             "apply_preset": "/api/device/<device_id>/preset/<preset_name>",
         },
     }
-    # Return a standardized success response with the data
     return success_response(data)
 
 
-# Define the health check route
-# This route accepts GET requests at /health
 @health_bp.route("/health")
 def health_check():
-    """Health check endpoint"""
+    """Simple health check endpoint"""
+    data = {
+        "status": "healthy",
+        "service": "tuya-alarm-api",
+    }
+    return success_response(data)
+
+
+@health_bp.route("/credentials")
+def credentials_check():
+    """Credentials and Tuya connectivity check endpoint"""
     try:
         # Attempt to get an access token to verify Tuya API connectivity
         token = tuya_client.get_access_token()
-        # Set api_status based on whether a token was retrieved
         api_status = "connected" if token else "disconnected"
-    except:
+    except Exception:
         # If an exception occurs, set api_status to 'error'
         api_status = "error"
 
-    # Define the health status data
     data = {
         "status": "healthy",
         "tuya_api": api_status,
         "data_center": "Singapore",
         "endpoint": TuyaConfig.ENDPOINT,
     }
-    # Return a standardized success response with the health data
     return success_response(data)

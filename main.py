@@ -79,7 +79,7 @@ def create_app():
     return app
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     # Create the application instance
     app = create_app()
 

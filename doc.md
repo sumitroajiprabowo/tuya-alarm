@@ -17,7 +17,8 @@ http://localhost:5000
 | Method | Endpoint | Description |
 |--------|----------|-----------|
 | GET | `/` | API info |
-| GET | `/health` | Health check |
+| GET | `/health` | Health check (Simple) |
+| GET | `/credentials` | Tuya Connectivity Check |
 | GET | `/api/devices` | List devices |
 | GET | `/api/device/{id}` | Device info |
 | GET | `/api/device/{id}/status` | Device status |
@@ -43,8 +44,7 @@ GET /health
 {
   "data": {
     "status": "healthy",
-    "tuya_api": "connected",
-    "data_center": "Singapore"
+    "service": "tuya-alarm-api"
   },
   "meta": {
     "timestamp": "2024-11-29T...",
@@ -53,7 +53,27 @@ GET /health
 }
 ```
 
-### 2. Get Device Status
+### 2. Credentials Check
+```http
+GET /credentials
+```
+**Response:**
+```json
+{
+  "data": {
+    "status": "healthy",
+    "tuya_api": "connected",
+    "data_center": "Singapore",
+    "endpoint": "https://openapi.tuyaus.com"
+  },
+  "meta": {
+    "timestamp": "2024-11-29T...",
+    "request_id": "..."
+  }
+}
+```
+
+### 3. Get Device Status
 ```http
 GET /api/device/{device_id}/status
 ```
