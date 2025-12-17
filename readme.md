@@ -53,6 +53,11 @@ Replace `YOUR_DEVICE_ID` with your device ID.
 curl http://localhost:5000/health
 ```
 
+### Credentials Check (Tuya Connectivity)
+```bash
+curl http://localhost:5000/credentials
+```
+
 ### Check Status
 ```bash
 curl http://localhost:5000/api/device/YOUR_DEVICE_ID/status

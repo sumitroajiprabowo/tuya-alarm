@@ -617,10 +617,77 @@ class TestTuyaClientRequest:
             with pytest.raises(Exception) as exc_info:
                 client.request("PATCH", "/v1.0/devices/123")
 
-            # Assert that the exception indicates unsupported method
+            # Assert that the exception indicates unsupported HTTP method
             assert "Unsupported HTTP method" in str(
                 exc_info.value
             ), "Exception should indicate unsupported HTTP method"
+
+    @patch("services.tuya_client.requests.put")
+    @patch.object(TuyaClient, "get_access_token")
+    @patch("services.tuya_client.TuyaConfig")
+    def test_request_put_with_body(self, mock_config, mock_get_token, mock_requests):
+        """Test successful PUT request with body"""
+        mock_config.ACCESS_ID = "test_access_id"
+        mock_config.ACCESS_SECRET = "test_secret"
+        mock_config.ENDPOINT = "https://openapi.tuyacn.com"
+        mock_get_token.return_value = "test_token"
+
+        mock_response = Mock()
+        mock_response.json.return_value = {"success": True, "result": True}
+        mock_requests.return_value = mock_response
+
+        client = TuyaClient()
+        client.config = mock_config
+        body = {"value": 100}
+        
+        result = client.request("PUT", "/v1.0/devices/123", body)
+        
+        assert result["success"] is True
+        assert mock_requests.called
+        assert "data" in mock_requests.call_args.kwargs
+
+    @patch("services.tuya_client.requests.delete")
+    @patch.object(TuyaClient, "get_access_token")
+    @patch("services.tuya_client.TuyaConfig")
+    def test_request_delete(self, mock_config, mock_get_token, mock_requests):
+        """Test successful DELETE request"""
+        mock_config.ACCESS_ID = "test_access_id"
+        mock_config.ACCESS_SECRET = "test_secret"
+        mock_config.ENDPOINT = "https://openapi.tuyacn.com"
+        mock_get_token.return_value = "test_token"
+
+        mock_response = Mock()
+        mock_response.json.return_value = {"success": True, "result": True}
+        mock_requests.return_value = mock_response
+
+        client = TuyaClient()
+        client.config = mock_config
+        
+        result = client.request("DELETE", "/v1.0/devices/123")
+        
+        assert result["success"] is True
+        assert mock_requests.called
+
+    @patch("services.tuya_client.requests.get")
+    @patch.object(TuyaClient, "get_access_token")
+    @patch("services.tuya_client.TuyaConfig")
+    def test_request_network_error_generic(self, mock_config, mock_get_token, mock_requests):
+        """Test generic RequestException handling"""
+        mock_config.ACCESS_ID = "test_access_id"
+        mock_config.ACCESS_SECRET = "test_secret"
+        mock_config.ENDPOINT = "https://openapi.tuyacn.com"
+        mock_get_token.return_value = "test_token"
+
+        import requests
+        mock_requests.side_effect = requests.exceptions.RequestException("Generic network error")
+
+        client = TuyaClient()
+        client.config = mock_config
+        
+        with pytest.raises(Exception) as exc_info:
+            client.request("GET", "/v1.0/devices/123")
+        
+        assert "Network error" in str(exc_info.value)
 
 
 class TestTuyaClientDeviceMethods:
