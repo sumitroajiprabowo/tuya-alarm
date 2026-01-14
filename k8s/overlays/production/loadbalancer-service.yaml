@@ -9,9 +9,6 @@ metadata:
     metallb.universe.tf/loadBalancerIPs: "10.100.0.199"
 spec:
   type: LoadBalancer
-  externalTrafficPolicy: Local
-  loadBalancerSourceRanges:
-    - "10.100.0.0/24"
   selector:
     app: tuya-alarm
   ports:

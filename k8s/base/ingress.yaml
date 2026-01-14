@@ -5,19 +5,7 @@ metadata:
   labels:
     app: tuya-alarm
   annotations:
-    # Use MetalLB LoadBalancer IP
     kubernetes.io/ingress.class: nginx
-
-    # IP Whitelist - Only allow 10.100.0.0/24
-    nginx.ingress.kubernetes.io/whitelist-source-range: "10.100.0.0/24"
-
-    # Optional: Custom error pages for blocked IPs
-    nginx.ingress.kubernetes.io/custom-http-errors: "403"
-
-    # Optional: Add real IP header
-    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
-
-    # Optional: SSL redirect (disable if no TLS)
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
