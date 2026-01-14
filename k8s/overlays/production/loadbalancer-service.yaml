@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tuya-alarm-lb
+  labels:
+    app: tuya-alarm
+  annotations:
+    metallb.universe.tf/ip-allocated-from-pool: applications
+    metallb.universe.tf/loadBalancerIPs: "10.100.0.199"
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  loadBalancerSourceRanges:
+    - "10.100.0.0/24"
+  selector:
+    app: tuya-alarm
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+      protocol: TCP
