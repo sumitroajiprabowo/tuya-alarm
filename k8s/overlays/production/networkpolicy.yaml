@@ -11,15 +11,7 @@ spec:
   policyTypes:
     - Ingress
   ingress:
-    # Allow from internal network only (10.100.0.0/24)
-    - from:
-        - ipBlock:
-            cidr: 10.100.0.0/24
-        # Allow K8s internal traffic
-        - ipBlock:
-            cidr: 10.42.0.0/16
-        - ipBlock:
-            cidr: 10.43.0.0/16
-      ports:
+    # Allow all traffic on port 5000
+    - ports:
         - protocol: TCP
           port: 5000
