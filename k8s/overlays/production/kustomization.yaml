@@ -3,10 +3,22 @@ kind: Kustomization
 
 namespace: production
 
-bases:
+resources:
+  - namespace.yaml
   - ../../base
+  - loadbalancer-service.yaml
+  - networkpolicy.yaml
+
+images:
+  - name: sumitroajiprabowo/tuya-alarm
+    newTag: latest
+
+replicas:
+  - name: tuya-alarm
+    count: 1
 
 patches:
+  # Deployment patch - Environment & Resources
   - patch: |-
       apiVersion: apps/v1
       kind: Deployment
@@ -20,7 +32,6 @@ patches:
               env:
               - name: ENV
                 value: "production"
-              image: "sumitroajiprabowo/tuya-alarm:latest"
               resources:
                 limits:
                   memory: "512Mi"
@@ -28,7 +39,3 @@ patches:
                 requests:
                   memory: "256Mi"
                   cpu: "200m"
-
-replicas:
-  - name: tuya-alarm
-    count: 1
